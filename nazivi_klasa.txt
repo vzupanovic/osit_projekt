@@ -1,0 +1,4 @@
+1 poluotvoreno
+2 normalno
+3 turbo
+4 zatvoreno
