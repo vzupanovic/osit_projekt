@@ -38,11 +38,12 @@ class Detekcija_ociju:
 	def trainClassifier(self):
 		features = []
 		classes = []
-		train_source = open('train_set.txt','r')
+		train_source = open('bazaSlika/klasirano.txt','r')
 		train_data = train_source.readlines()
 		for line in train_data:
 			line_data = []
 			line = line.strip()
+			print line
 			line_data = line.split(" ")
 			im_class = line_data[1]
 			img = line_data[0]
@@ -60,17 +61,39 @@ class Detekcija_ociju:
 		return result
 		
 	def classifySingle(self, imgName, classifier):
-		self.class_names = {1 : 'poluotvoreno', 2 : 'normalno', 3 : 'turbo', 4 : 'zatvoreno'}
+		self.class_names = {1 : 'zatvoreno', 2 : 'poluotvoreno', 3 : 'otvoreno', 4 : 'turbo'}
 		feature = [self.calculateHistogram(self.loadImage(imgName),32)];
 		feature =  numpy.matrix(numpy.array(feature)).astype("float32")
 		_, result, _, _ = self.applyClassifier(classifier, feature)
 		return self.class_names[int(result)]
+		
+	def classifyMore(self, dat, classifier):
+		score = 0
+		test_source = open('bazaSlika/klasificiraj.txt','r')
+		test_set = test_source.readlines()
+		maximum = len(test_set)
+		for line in test_set:
+			line_data = []
+			line = line.strip()
+			line_data = line.split(" ")
+			im_class = line_data[1]
+			img = line_data[0]
+			g_class = self.classifySingle(img, classifier)
+			print img, g_class, im_class
+			if (g_class == self.class_names[int(im_class)]):
+				score = score + 1
+		print "SCORE: "+str(score)+"/"+str(maximum)
+			
+		
 				
 		
 if __name__ == "__main__":
 	det_oci = Detekcija_ociju()
 	classifier = det_oci.trainClassifier()
-	det_oci.classifySingle('recordings_classify/eye131.jpg',classifier)
+	name = det_oci.classifySingle('recordings_test1/eye_2_13.jpg',classifier)
+	print name
+	#det_oci.classifyMore('123',classifier)
+	
 
 	
 	
